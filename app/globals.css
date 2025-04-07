@@ -1,26 +1,229 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  .list-disc li::marker {
+    color: #ff4500;
   }
+  .list-decimal li::marker {
+    color: #ff4500;
+  }
+  body.dark .list-disc li::marker,
+  body.dark .list-decimal li::marker {
+    color: #ff4500;
+  }
+}
+
+:root {
+  --background: #fff5e6;
+  --foreground: #1a1a2e;
+  --accent: #ff4500;
+  --accent-hover: #e63900;
+}
+
+.dark {
+  --background: #161b22;
+  --foreground: #eaeaea;
+  --accent: #ff4500;
+  --accent-hover: #ff6347;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.7;
+  padding: 2rem;
+  transition: background-color 0.3s, color 0.3s;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  line-height: 1.2;
+  transition: color 0.3s;
+}
+
+h1 {
+  font-size: 2.75rem;
+  color: var(--accent);
+}
+
+h2 {
+  font-size: 2.25rem;
+  color: var(--accent);
+}
+
+h3 {
+  font-size: 1.875rem;
+  color: var(--accent);
+}
+
+body.dark h1,
+body.dark h2,
+body.dark h3 {
+  color: var(--accent);
+}
+
+blockquote {
+  border-left: 6px solid var(--accent);
+  padding-left: 1.75rem;
+  font-style: italic;
+  color: #8b4513;
+  background-color: #fff0e0;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  transition: all 0.3s;
+}
+
+body.dark blockquote {
+  color: #eaeaea;
+  background-color: #1f2933;
+  border-left-color: var(--accent);
+}
+
+pre {
+  background-color: #fff0e0;
+  padding: 1.75rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  font-family: 'Fira Code', monospace;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ff6347;
+  transition: all 0.3s;
+}
+
+body.dark pre {
+  background-color: #1f2933;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+  border-color: #ff4500;
+}
+
+code {
+  background-color: #ffe4b5;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.3rem;
+  font-family: 'Fira Code', monospace;
+  color: #1a1a2e;
+  font-size: 0.9em;
+  transition: all 0.3s;
+}
+
+body.dark code {
+  background-color: #ff4500;
+  color: #fff5e6;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+body.dark a {
+  color: var(--accent);
+}
+
+body.dark a:hover {
+  color: var(--accent-hover);
+}
+
+button {
+  background-color: var(--accent);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 7px 10px rgba(0, 0, 0, 0.15);
+}
+
+body.dark button {
+  background-color: #ff4500;
+  color: #fff5e6;
+}
+
+body.dark button:hover {
+  background-color: #ff6347;
+}
+
+.editor-container {
+  background-color: var(--background);
+  border: 1px solid #ff6347;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+body.dark .editor-container {
+  background-color: #1f2933;
+  border-color: #ff4500;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.editor-content {
+  min-height: 250px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 1.25rem;
+  border: 1px solid #ff6347;
+  border-radius: 0.5rem;
+  transition: all 0.3s;
+}
+
+body.dark .editor-content {
+  border-color: #ff4500;
+}
+
+.ProseMirror-selectednode {
+  background-color: rgba(255, 69, 0, 0.15);
+}
+
+.ProseMirror {
+  caret-color: var(--accent);
+}
+
+* {
+  transition-property: background-color, border-color, color, box-shadow, transform;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: var(--accent);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 1.5rem;
+  }
+  .editor-container {
+    padding: 1rem;
+  }
+  .editor-content {
+    padding: 1rem;
+  }
 }
