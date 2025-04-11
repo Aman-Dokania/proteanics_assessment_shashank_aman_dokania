@@ -18,6 +18,10 @@ Powered by Gemini 2.0 Flash API, these tools enhance user productivity and creat
 - 🧠 Prompt the AI with something like “write a summary about climate change”.
 - 📄 The AI generates text and inserts it into the editor at the cursor position.
 
+  ## 🎥 Demo Video
+[![Watch the demo]](https://drive.google.com/file/d/1-CCHdE3vjxjHwHxNKpYY9gJoX3UVxKxt/view?usp=drive_link)
+
+
 ##  📦 Components
 
 | Component             | Description                                                   |
