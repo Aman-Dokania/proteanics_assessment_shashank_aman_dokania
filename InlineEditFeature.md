@@ -1,4 +1,4 @@
-# ✨ AI Editing Features for Rich Text Editors
+# ✨ AI Editing Features 
 This project provides two AI-powered features for rich text editors using Tiptap:
 
 - AI Inline Edit: Modify selected text with natural language instructions.
