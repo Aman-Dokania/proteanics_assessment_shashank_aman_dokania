@@ -1,4 +1,3 @@
-
 "use client";
 
 import { forwardRef, useImperativeHandle, useState } from "react";
@@ -49,22 +48,24 @@ const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(({ items, command }, 
   };
 
   return (
-    <div className="absolute bg-white dark:bg-gray-800 shadow-lg rounded-md p-2 w-60 z-50">
+    <div className="absolute z-50 w-72 bg-white dark:bg-gray-900 shadow-xl rounded-2xl p-2 space-y-1 border border-gray-200 dark:border-gray-700">
       {items.map((item, index) => (
         <button
           key={index}
-          className={`flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            index === selectedIndex ? "bg-gray-100 dark:bg-gray-700" : ""
-          }`}
           onClick={() => selectItem(index)}
+          className={`group w-full flex items-start gap-3 rounded-xl px-3 py-2 transition-colors duration-150 text-left 
+            ${index === selectedIndex
+              ? "bg-gray-100 dark:bg-gray-800"
+              : "hover:bg-gray-50 dark:hover:bg-gray-800"
+            }`}
         >
-          {item.icon && <span>{item.icon}</span>}
-          <div>
-            <p className="font-medium text-sm">{item.title}</p>
+          {item.icon && (
+            <span className="text-xl mt-0.5">{item.icon}</span>
+          )}
+          <div className="flex flex-col overflow-hidden">
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{item.title}</span>
             {item.description && (
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {item.description}
-              </p>
+              <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.description}</span>
             )}
           </div>
         </button>

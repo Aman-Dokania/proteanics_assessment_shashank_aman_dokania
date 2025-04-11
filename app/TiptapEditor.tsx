@@ -21,91 +21,81 @@ import { Placeholder } from "@tiptap/extension-placeholder";
 import { SlashCommand } from "./extensions/SlashCommand"; 
 import { Callout } from "./extensions/Callout"; 
 import { useTheme } from "next-themes";
-
+import AIEditPanel from './AIEditPanel';
+import {aiEditPluginKey} from './extensions/aiEditPlugin'
+import AIFloatingMenu from "./AIFloatingMenu";
+import AIToolbarButton from "./AIToolbarButton";
 const TiptapEditor = () => {
   const { theme, setTheme } = useTheme(); 
 
   const COMMAND_ITEMS = [
+    
     {
-      title: "Heading 1",
-      icon: "🔠",
-      command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().toggleHeading({ level: 1 }).run(),
-    },
-    {
-      title: "Heading 2",
+      title: "Heading ",
       icon: "🔡",
       command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().toggleHeading({ level: 2 }).run(),
+      editor.chain().focus().toggleHeading({ level: 2 }).run(),
     },
-    {
-      title: "Heading 3",
-      icon: "🔤",
-      command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().toggleHeading({ level: 3 }).run(),
-    },
+    
     {
       title: "Bold",
       icon: "B",
       command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().toggleBold().run(),
+      editor.chain().focus().toggleBold().run(),
     },
     {
       title: "Italic",
       icon: "I",
       command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().toggleItalic().run(),
+      editor.chain().focus().toggleItalic().run(),
     },
     {
       title: "Bullet List",
       icon: "•",
       command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().toggleBulletList().run(),
+      editor.chain().focus().toggleBulletList().run(),
     },
     {
       title: "Ordered List",
       icon: "1.",
       command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().toggleOrderedList().run(),
+      editor.chain().focus().toggleOrderedList().run(),
     },
     {
       title: "Blockquote",
       icon: "❝",
       command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().toggleBlockquote().run(),
+      editor.chain().focus().toggleBlockquote().run(),
     },
     {
       title: "Horizontal Rule",
       icon: "―",
       command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().setHorizontalRule().run(),
+      editor.chain().focus().setHorizontalRule().run(),
     },
     {
       title: "Code Block",
       icon: "<>",
       command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().toggleCodeBlock().run(),
+      editor.chain().focus().toggleCodeBlock().run(),
     },
     {
       title: "Callout",
       icon: "💡",
       command: ({ editor }: { editor: Editor }) =>
-        editor.chain().focus().insertContent({
-          type: "callout",
-          content: [
-            {
-              type: "paragraph",
-              content: [
-                {
-                  type: "text",
-                  text: "Type your content here",
-                },
-              ],
-            },
-          ],
-        }).run(),
+      editor.chain().focus().insertContent({
+        type: "callout",
+        content: [
+        {
+          type: "paragraph",
+          content: [],
+        },
+        ],
+      }).run(),
     },
-  ];
+    ];
+
+  
 
   const editor = useEditor({
     extensions: [
@@ -114,11 +104,16 @@ const TiptapEditor = () => {
       horizontalRule: false,
       codeBlock: false,
       
+      
       }),
       Bold,
       Italic,
       Code,
-      Blockquote,
+      Blockquote.configure({
+        HTMLAttributes: {
+          class: "my-blockquote px-4 border-l-4 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300",
+        },
+      }),
       BulletList.configure({
       HTMLAttributes: { class: "list-disc pl-4" },
       }),
@@ -154,19 +149,23 @@ const TiptapEditor = () => {
     content: `
       
       <h2>Welcome to your Tiptap editor!</h2>
-      <p>Hello World</p>
-      <blockquote>A blockquote example.</blockquote>
+      <p>Hello World!</p>
+      
       <ul>
         <li>Bullet list item 1</li>
         <li>Bullet list item 2</li>
       </ul>
+      <blockquote>A blockquote example.</blockquote>
       <ol>
         <li>Ordered list item 1</li>
         <li>Ordered list item 2</li>
       </ol>
+      
       <pre><code class="language-javascript">console.log('Hello, world!');</code></pre>
+      <br>
       
       `,
+      immediatelyRender: false,
     editorProps: {
       attributes: {
       class: "prose prose-lg mx-auto focus:outline-none mt-4", 
@@ -178,22 +177,35 @@ const TiptapEditor = () => {
       }
       return false;
       },
-      handleDOMEvents: {
-      click: () => {
-        const placeholder = document.querySelector(
-        ".ProseMirror p:first-child"
-        );
-        if (placeholder) {
-        placeholder.textContent = "";
-        }
-      },
-      },
+      
     },
     });
+    
+
 
   if (!editor) {
     return <div className="text-center text-gray-500">Loading editor...</div>;
   }
+  const handleAIEdit = (modifiedText: string): void => {
+    if (!editor) return;
+
+    // Validate the modified text and convert it to a ProseMirror-compatible node
+    const { schema } = editor;
+    const contentNode = schema.text(modifiedText);
+
+    // Replace the selected content with the modified text
+    editor.chain()
+      .focus()
+      .command(({ tr }) => {
+        const { from, to } = aiEditPluginKey.getState(editor.state).selection;
+        tr.replaceWith(from, to, contentNode);
+        return true;
+      })
+      .run();
+  };
+
+  
+
 
   return (
     <div className="min-h-screen transition-all">
@@ -210,7 +222,8 @@ const TiptapEditor = () => {
       {/* Editor Container */}
       <div className="max-w-5xl mx-auto mt-4 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
         {/* Toolbar */}
-        <div className="flex flex-wrap space-x-1 mb-2">
+        <div className="flex flex-wrap justify-center space-x-1 mb-2">
+        <AIToolbarButton editor={editor} />
           {/* Bold Button */}
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -236,19 +249,19 @@ const TiptapEditor = () => {
           >
             <em>I</em>
           </button>
-            {/* Heading Button */}
-<button
-  onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-  className={`p-2 rounded-md transition ${
-    editor.isActive('heading', { level: 2 })
-      ? 'bg-blue-600 text-white'
-      : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-dark'
-  }`}
-  title="Heading Level 2"
->
-  H2
-</button>
 
+          {/* Heading Button */}
+          <button
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            className={`p-2 rounded-md transition ${
+              editor.isActive("heading", { level: 2 })
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-dark"
+            }`}
+            title="Heading Level 2"
+          >
+            H2
+          </button>
 
           {/* Callout Button */}
           <button
@@ -322,21 +335,34 @@ const TiptapEditor = () => {
 
           {/* Add New Line Button */}
           <button
-            onClick={() => editor.chain().focus().insertContent("<p></p>").run()}
+            onClick={() =>
+              editor.chain().focus().exitCode().insertContent("<p></p>").run()
+            }
             className="p-2 rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition"
             title="Add New Line"
           >
             +
           </button>
         </div>
-      </div>
 
-      {/* Editor Content */}
-      <EditorContent
-        editor={editor}
-        className="prose prose-lg max-w-none focus:outline-none dark:prose-invert"
-      />
-    </div>
+        {/* Editor Content */}
+        <div className="editor-container">
+          <EditorContent editor={editor} />
+
+          {editor?.isActive("ai-edit") && (
+            <AIEditPanel
+              initialText={aiEditPluginKey.getState(editor.state).originalText}
+              onApply={handleAIEdit}
+              onCancel={() => editor.commands.setMeta(aiEditPluginKey, { active: false })}
+            />
+          )}
+
+          {/* AI Floating Menu */}
+          <AIFloatingMenu editor={editor} />
+        </div>
+      </div>
+  </div>
   );
 };
+
 export default TiptapEditor;

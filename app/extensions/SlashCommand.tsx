@@ -20,7 +20,6 @@ interface SuggestionItemsParams {
   query: string;
   editor: Editor;
 }
-
 export const SlashCommand = Extension.create<{
   suggestion: Omit<SuggestionOptions, "editor"> & {
     items?: (params: SuggestionItemsParams) => CommandItem[];
@@ -33,11 +32,12 @@ export const SlashCommand = Extension.create<{
       suggestion: {
         char: "/",
         startOfLine: true,
-        items: () => [], 
+        items: () => [],
         command: ({ editor, range, props }) => {
           props.command({ editor, range });
+          editor.chain().focus().deleteRange(range).run();
         },
-      }
+      },
     };
   },
 
